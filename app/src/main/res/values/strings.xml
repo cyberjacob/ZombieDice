@@ -35,4 +35,6 @@
         <item quantity="other">Player %1$d has won the game with %2$d brains</item>
     </plurals>
 
+    <string name="banner_ad_unit_id">ca-app-pub-5951815556990967/9636960889</string>
+
 </resources>

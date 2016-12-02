@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "828225954789",
+    "firebase_url": "https://zombiedice-45a4e.firebaseio.com",
+    "project_id": "zombiedice-45a4e",
+    "storage_bucket": "zombiedice-45a4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828225954789:android:d424544d93efd470",
+        "android_client_info": {
+          "package_name": "uk.co.bluesapphiremedia.android.zombiedice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "828225954789-h4kkti4taeivabhsjjlfhv9g24jmobub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uk.co.bluesapphiremedia.android.zombiedice",
+            "certificate_hash": "C3FCDC91EF3F7FA37E24455EE588AB35459D6AE0"
+          }
+        },
+        {
+          "client_id": "828225954789-lc8to53opb9q1dhnncbr1ft23maq04ki.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyetLDsYaJpiPCm_-tDLFyRweTYVFIF28"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "828225954789-lc8to53opb9q1dhnncbr1ft23maq04ki.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
