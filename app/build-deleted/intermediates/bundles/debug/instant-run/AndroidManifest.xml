@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--   ~ Copyright (c) 2016. Jacob Mansfield. All rights reserved -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="uk.co.bluesapphiremedia.android.zombiedice"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="23" />
+
+    <application
+        android:name="com.android.tools.fd.runtime.BootstrapApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".SelectPlayersActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="uk.co.bluesapphiremedia.android.zombiedice.PlayActivity"
+            android:label="@string/title_activity_play" >
+        </activity>
+    </application>
+
+</manifest>

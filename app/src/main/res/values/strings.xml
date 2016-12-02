@@ -1,0 +1,38 @@
+<!--
+  ~ Copyright (c) 2016. Jacob Mansfield. All rights reserved
+  -->
+
+<resources>
+    <string name="app_name">Brains Bank</string>
+
+    <string name="select_num_players">Select Number of Players</string>
+    <string name="default_num_players">3</string>
+    <string name="select_num_players_instructions">Swipe left and right to select number of players</string>
+    <string name="select_num_players_continue">Continue</string>
+    <string name="title_activity_play">Time to play!</string>
+
+    <string name="add_brain">+\nBrain</string>
+    <string name="add_shotgun">+\nShotgun</string>
+    <string name="remove_brain">-\nBrain</string>
+    <string name="remove_shotgun">-\nShotgun</string>
+    <string name="end_turn">End Turn</string>
+
+    <string name="player_turn">Player %1$d\'s turn</string>
+    <string name="this_turn">This turn</string>
+    <string name="in_the_bank">In the Bank</string>
+    <string name="player">Player %1$d</string>
+    <string name="needed_to_win">Needed to Win</string>
+    <string name="shotgun_icon">Shotgun icon</string>
+
+    <plurals name="brains">
+        <item quantity="one">%1$d Brain</item>
+        <item quantity="other">%1$d Brains</item>
+    </plurals>
+    <string name="title_activity_final_screen">FinalScreenActivity</string>
+    <string name="play_again">Play Again</string>
+
+    <plurals name="win_brains">
+        <item quantity="other">Player %1$d has won the game with %2$d brains</item>
+    </plurals>
+
+</resources>
