@@ -7,7 +7,6 @@ package uk.co.bluesapphiremedia.android.zombiedice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,49 +16,49 @@ import com.google.android.gms.ads.AdView;
 
 public class SelectPlayersActivity extends AppCompatActivity {
 
-    TextView num_players_view;
+    TextView numPlayersView;
+    int numPlayers = 3;
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        FrameLayout num_players_frame = (FrameLayout) findViewById(R.id.num_players_frame);
-        num_players_view = (TextView) findViewById(R.id.num_players);
+        FrameLayout numPlayersFrame = (FrameLayout) findViewById(R.id.num_players_frame);
+        numPlayersView = (TextView) findViewById(R.id.num_players);
 
-        num_players_frame.setOnTouchListener(new OnSwipeTouchListener(SelectPlayersActivity.this) {
+        numPlayersFrame.setOnTouchListener(new OnSwipeTouchListener(SelectPlayersActivity.this) {
+            @Override
             public void onSwipeRight() {
                 // Decrement number of players
-                int num_players = Integer.parseInt(num_players_view.getText().toString());
-                if (num_players > 2) {
-                    num_players_view.setText(String.valueOf(num_players - 1));
+                if (numPlayers > 2) {
+                    numPlayersView.setText(String.valueOf(numPlayers - 1));
                 } else {
                     Toast.makeText(SelectPlayersActivity.this, "Cannot play with less than 2 players", Toast.LENGTH_LONG).show();
                 }
             }
 
+            @Override
             public void onSwipeLeft() {
                 // Increment number of players
-                int num_players = Integer.parseInt(num_players_view.getText().toString());
-                if (num_players == 0) {
+                if (numPlayers == 0) {
                     Toast.makeText(SelectPlayersActivity.this, "What are you on about?", Toast.LENGTH_SHORT).show();
                 } else {
-                    num_players_view.setText(String.valueOf(num_players + 1));
+                    numPlayersView.setText(String.valueOf(numPlayers + 1));
                 }
 
             }
         });
     }
 
-    public void onContinueClick(View v) {
-        int num_players = Integer.parseInt(num_players_view.getText().toString());
-        int[] scores = new int[num_players];
+    public void onContinueClick() {
+        int[] scores = new int[numPlayers];
 
-        for (int i = 0; i<num_players; i++) {
+        for (int i = 0; i<numPlayers; i++) {
             scores[i] = 0;
         }
 
         Intent intent = new Intent(getBaseContext(), PlayActivity.class);
-        intent.putExtra("NUM_PLAYERS", num_players);
+        intent.putExtra("NUM_PLAYERS", numPlayers);
         intent.putExtra("SCORES", scores);
         startActivity(intent);
     }

@@ -5,7 +5,6 @@
 package uk.co.bluesapphiremedia.android.zombiedice;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,184 +18,150 @@ import android.widget.Toast;
 
 public class PlayActivity extends AppCompatActivity {
 
+    int numberShotguns = 0;
+    int currentScore = 0;
+
+    private static final String TAG = "brains.PlayActivity";
+    private static final String SCORES = "SCORES";
+    private static final String NUM_PLAYERS = "NUM_PLAYERS";
+    private static final String CURRENT_PLAYER = "CURRENT_PLAYER";
+    private static final String WINNING_PLAYER = "WINNING_PLAYER";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-        Log.d("brains.PlayActivity", "onCreate: Starting!");
+        Log.d(TAG, "onCreate: Starting!");
 
         // Get the scores array, number of players, and current player from the inbound intent
         Intent intent = getIntent();
-        final int[] scores = intent.getIntArrayExtra("SCORES");
-        final int num_players = intent.getIntExtra("NUM_PLAYERS", 3);
-        final int[] current_player = {intent.getIntExtra("CURRENT_PLAYER", 0)};
-        final int[] winning_player = {intent.getIntExtra("WINNING_PLAYER", -1)};
+        final int[] scores = intent.getIntArrayExtra(SCORES);
+        final int numPlayers = intent.getIntExtra(NUM_PLAYERS, 3);
+        final int[] currentPlayer = {intent.getIntExtra(CURRENT_PLAYER, 0)};
+        final int[] winningPlayer = {intent.getIntExtra(WINNING_PLAYER, -1)};
 
         // make sure we have a score table
         assert scores != null;
 
-        // find the scoreboard in the view
-        TableLayout scoreboard = (TableLayout) findViewById(R.id.scoreboard);
-
-        // get the string resources to be formatted
-        Resources res = getResources();
-        String player_name_format = res.getString(R.string.player);
-
-        // Set the scoreboard in the view
-        Log.d("brains.PlayActivity", "onCreate: Creating scoreboard");
-        // for each player entry in the scoreboard
-        for (int i = 0; i < num_players; i++) {
-            Log.d("brains.PlayActivity", "onCreate: adding scoreboard entry "+String.valueOf(i));
-
-            // create 2 TextViews
-            TextView player_name = new TextView(PlayActivity.this);
-            TextView player_score = new TextView(PlayActivity.this);
-
-            // Set the size of the TextViews
-            player_name.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-
-            // set the first one to the player's name string resource
-            player_name.setText(String.format(player_name_format, i + 1));
-            // set the second one to the player's score resource, which takes the score twice (once for the number itself, and once to work out which plural is needed)
-            player_score.setText(res.getQuantityString(R.plurals.brains, scores[i], scores[i]));
-
-            // Create a TableRow to put the score into
-            TableRow scoreboard_entry = new TableRow(PlayActivity.this);
-            // Set the size of the TableRow
-            scoreboard_entry.setLayoutParams(new TableRow.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
-            // Add the TextViews to the TableRow
-            scoreboard_entry.addView(player_name);
-            scoreboard_entry.addView(player_score);
-
-            // Add the TableRow to the TableLayout
-            scoreboard.addView(scoreboard_entry);
-        }
+        setupScoreboard(numPlayers, scores);
 
         // set the title
-        TextView title_text = (TextView) findViewById(R.id.current_player_text);
-        title_text.setText(String.format(res.getString(R.string.player_turn), current_player[0] + 1));
-
-        // Players always start with 0 shotguns. This needs to be an array so we can modify it inside the button functions
-        final int[] number_shotguns = {0};
+        TextView titleText = (TextView) findViewById(R.id.current_player_text);
+        titleText.setText(String.format(getResources().getString(R.string.player_turn), currentPlayer[0] + 1));
 
         // Make sure all three are hidden
-        updateShotguns(number_shotguns[0]);
+        updateShotguns();
 
         // Find the three score indicators
-        final TextView score_this_turn_text = (TextView) findViewById(R.id.score_this_turn);
-        TextView score_in_bank_text = (TextView) findViewById(R.id.score_in_bank);
-        final TextView score_to_win_text = (TextView) findViewById(R.id.score_to_win);
+        final TextView scoreThisTurnText = (TextView) findViewById(R.id.score_this_turn);
+        TextView scoreInBankText = (TextView) findViewById(R.id.score_in_bank);
+        final TextView scoreToWinText = (TextView) findViewById(R.id.score_to_win);
 
         // Set their values
-        score_this_turn_text.setText("0");
-        score_in_bank_text.setText(String.valueOf(scores[current_player[0]]));
-        score_to_win_text.setText(String.valueOf(13-scores[current_player[0]]));
+        scoreThisTurnText.setText("0");
+        scoreInBankText.setText(String.valueOf(scores[currentPlayer[0]]));
+        scoreToWinText.setText(String.valueOf(13-scores[currentPlayer[0]]));
 
         // Set the functions for the +/- brain buttons
-        final Button add_brain_button = (Button) findViewById(R.id.add_brain);
-        add_brain_button.setOnClickListener(
+        final Button addBrainButton = (Button) findViewById(R.id.add_brain);
+        addBrainButton.setOnClickListener(
                 new View.OnClickListener() {
+                    @Override
                     public void onClick(View v) {
-                        int current_score = Integer.parseInt(score_this_turn_text.getText().toString());
-                        current_score++;
-                        score_this_turn_text.setText(String.valueOf(current_score));
-                        score_to_win_text.setText(String.valueOf(13-(current_score+scores[current_player[0]])));
+                        currentScore++;
+                        scoreThisTurnText.setText(String.valueOf(currentScore));
+                        scoreToWinText.setText(String.valueOf(13-(currentScore+scores[currentPlayer[0]])));
                     }
                 });
 
-        final Button remove_brain_button = (Button) findViewById(R.id.remove_brain);
-        remove_brain_button.setOnClickListener(
+        final Button removeBrainButton = (Button) findViewById(R.id.remove_brain);
+        removeBrainButton.setOnClickListener(
                 new View.OnClickListener() {
+                    @Override
                     public void onClick(View v) {
-                        int current_score = Integer.parseInt(score_this_turn_text.getText().toString());
-                        if (current_score>0) {
-                            current_score--;
+                        if (currentScore>0) {
+                            currentScore--;
                         } else {
                             Toast.makeText(PlayActivity.this, "Wait, what?!?", Toast.LENGTH_LONG).show();
                         }
-                        score_this_turn_text.setText(String.valueOf(current_score));
-                        score_to_win_text.setText(String.valueOf(13-(current_score+scores[current_player[0]])));
+                        scoreThisTurnText.setText(String.valueOf(currentScore));
+                        scoreToWinText.setText(String.valueOf(13-(currentScore+scores[currentPlayer[0]])));
                     }
                 });
 
         // same again for the shotgun buttons
-        final Button add_shotgun_button = (Button) findViewById(R.id.add_shotgun);
-        add_shotgun_button.setOnClickListener(
+        final Button addShotgunButton = (Button) findViewById(R.id.add_shotgun);
+        addShotgunButton.setOnClickListener(
                 new View.OnClickListener() {
+                    @Override
                     public void onClick(View v) {
-                        if (number_shotguns[0] == 3) {
+                        if (numberShotguns == 3) {
                             Toast.makeText(PlayActivity.this, "You're already out!", Toast.LENGTH_LONG).show();
                         } else {
-                            number_shotguns[0]++;
+                            numberShotguns++;
                         }
-                        updateShotguns(number_shotguns[0]);
+                        updateShotguns();
                     }
                 }
         );
 
-        final Button remove_shotgun_button = (Button) findViewById(R.id.remove_shotgun);
-        remove_shotgun_button.setOnClickListener(
+        final Button removeShotgunButton = (Button) findViewById(R.id.remove_shotgun);
+        removeShotgunButton.setOnClickListener(
                 new View.OnClickListener() {
+                    @Override
                     public void onClick(View v) {
-                        if (number_shotguns[0] == 0) {
+                        if (numberShotguns == 0) {
                             Toast.makeText(PlayActivity.this, "What are you on about?", Toast.LENGTH_SHORT).show();
                         } else {
-                            number_shotguns[0]--;
+                            numberShotguns--;
                         }
-                        updateShotguns(number_shotguns[0]);
+                        updateShotguns();
                     }
                 }
         );
 
         // and finally, set up the end turn button
-        final Button end_turn_button = (Button) findViewById(R.id.end_turn);
-        end_turn_button.setOnClickListener(
+        final Button endTurnButton = (Button) findViewById(R.id.end_turn);
+        endTurnButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Get the player's score
-                        int current_score = Integer.parseInt(score_this_turn_text.getText().toString());
-
                         // Check if the player has less than 3 shotguns
-                        if (number_shotguns[0]<3) {
+                        if (numberShotguns <3) {
                             // They do, so increase their 'banked' score
-                            scores[current_player[0]] += current_score;
+                            scores[currentPlayer[0]] += currentScore;
                         }
 
-                        int next_player = current_player[0]+1;
+                        int nextPlayer = currentPlayer[0]+1;
 
-                        if (next_player == num_players) {
+                        if (nextPlayer == numPlayers) {
                             // back to the first player
-                            next_player = 0;
+                            nextPlayer = 0;
                         }
 
                         // Check if the current player is the last person who will be playing
-                        if (winning_player[0] == next_player) {
-                            Toast.makeText(PlayActivity.this, "Starting FinalScreen", Toast.LENGTH_LONG).show();
+                        if (winningPlayer[0] == nextPlayer) {
 
                             // It is, so let's go to the finishing screen
                             Intent intent = new Intent(PlayActivity.this, FinalScreenActivity.class);
 
                             // pack the scores
-                            intent.putExtra("SCORES", scores);
+                            intent.putExtra(SCORES, scores);
 
                             // let's go
                             startActivity(intent);
-                        } else {
-                            Toast.makeText(PlayActivity.this, String.valueOf(winning_player[0])+" does not equal "+String.valueOf(next_player), Toast.LENGTH_LONG).show();
                         }
 
                         // Check if the current player has enough brains to finish the game
-                        if ((current_score>=13) && (winning_player[0] == -1)) {
+                        if ((currentScore>=13) && (winningPlayer[0] == -1)) {
                             // They do!
                             // record them as the finishing player
-                            winning_player[0] = current_player[0];
+                            winningPlayer[0] = currentPlayer[0];
                         }
 
                         // increment to the next player
-                        current_player[0] = next_player;
+                        currentPlayer[0] = nextPlayer;
 
                         // go to the play activity again
                         // prepare an intent to pass over some variables
@@ -204,9 +169,9 @@ public class PlayActivity extends AppCompatActivity {
 
                         // pack the variables into the intent
                         intent.putExtra("SCORES", scores);
-                        intent.putExtra("NUM_PLAYERS", num_players);
-                        intent.putExtra("CURRENT_PLAYER", current_player[0]);
-                        intent.putExtra("WINNING_PLAYER", winning_player[0]);
+                        intent.putExtra(NUM_PLAYERS, numPlayers);
+                        intent.putExtra(CURRENT_PLAYER, currentPlayer[0]);
+                        intent.putExtra(WINNING_PLAYER, winningPlayer[0]);
 
                         // activate the intent
                         startActivity(intent);
@@ -214,28 +179,67 @@ public class PlayActivity extends AppCompatActivity {
                 }
         );
 
-        Log.d("brains.PlayActivity", "onCreate: Finished!");
+        Log.d(TAG, "onCreate: Finished!");
     }
 
-    private void updateShotguns(int number_shotguns) {
+    private void setupScoreboard(int numPlayers, int[] scores) {
+        // Set the scoreboard in the view
+        Log.d(TAG, "onCreate: Creating scoreboard");
+
+        String playerNameFormat = getResources().getString(R.string.player);
+
+        // find the scoreboard in the view
+        TableLayout scoreboard = (TableLayout) findViewById(R.id.scoreboard);
+
+        // for each player entry in the scoreboard
+        for (int i = 0; i < numPlayers; i++) {
+            Log.d(TAG, "onCreate: adding scoreboard entry "+i);
+
+            // create 2 TextViews
+            TextView playerName = new TextView(PlayActivity.this);
+            TextView playerScore = new TextView(PlayActivity.this);
+
+            // Set the size of the TextViews
+            playerName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+            // set the first one to the player's name string resource
+            playerName.setText(String.format(playerNameFormat, i + 1));
+            // set the second one to the player's score resource, which takes the score twice (once for the number itself, and once to work out which plural is needed)
+            playerScore.setText(getResources().getQuantityString(R.plurals.brains, scores[i], scores[i]));
+
+            // Create a TableRow to put the score into
+            TableRow scoreboardEntry = new TableRow(PlayActivity.this);
+            // Set the size of the TableRow
+            scoreboardEntry.setLayoutParams(new TableRow.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+
+            // Add the TextViews to the TableRow
+            scoreboardEntry.addView(playerName);
+            scoreboardEntry.addView(playerScore);
+
+            // Add the TableRow to the TableLayout
+            scoreboard.addView(scoreboardEntry);
+        }
+    }
+
+    private void updateShotguns() {
         // find the shotgun indicators
         ImageView shotgun1 = (ImageView) findViewById(R.id.shotgun1);
         ImageView shotgun2 = (ImageView) findViewById(R.id.shotgun2);
         ImageView shotgun3 = (ImageView) findViewById(R.id.shotgun3);
 
-        if (number_shotguns==0) {
+        if (numberShotguns ==0) {
             shotgun1.setVisibility(ImageView.INVISIBLE);
             shotgun2.setVisibility(ImageView.INVISIBLE);
             shotgun3.setVisibility(ImageView.INVISIBLE);
-        } else if (number_shotguns==1) {
+        } else if (numberShotguns ==1) {
             shotgun1.setVisibility(ImageView.VISIBLE);
             shotgun2.setVisibility(ImageView.INVISIBLE);
             shotgun3.setVisibility(ImageView.INVISIBLE);
-        } else if (number_shotguns==2) {
+        } else if (numberShotguns ==2) {
             shotgun1.setVisibility(ImageView.VISIBLE);
             shotgun2.setVisibility(ImageView.VISIBLE);
             shotgun3.setVisibility(ImageView.INVISIBLE);
-        } else if (number_shotguns==3) {
+        } else if (numberShotguns ==3) {
             shotgun1.setVisibility(ImageView.VISIBLE);
             shotgun2.setVisibility(ImageView.VISIBLE);
             shotgun3.setVisibility(ImageView.VISIBLE);
