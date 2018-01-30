@@ -2,6 +2,10 @@
  * Copyright (c) 2016. Jacob Mansfield. All rights reserved
  */
 
+plugins {
+    id "org.sonarqube" version "2.2"
+}
+
 apply plugin: 'com.android.application'
 
 android {
@@ -44,8 +48,5 @@ dependencies {
     compile 'com.google.firebase:firebase-crash:10.0.1'
     compile 'com.google.firebase:firebase-ads:10.0.1'
 }
-
-
-
 
 apply plugin: 'com.google.gms.google-services'
